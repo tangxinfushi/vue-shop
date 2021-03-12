@@ -23,7 +23,8 @@ import {
   Switch,
   Tooltip,
   Pagination,
-  Dialog
+  Dialog,
+  MessageBox
 } from 'element-ui'
 
 Vue.use(Button)
@@ -50,3 +51,5 @@ Vue.use(Pagination)
 Vue.use(Dialog)
 // message 需要进行全局挂载，挂载到vue身上
 Vue.prototype.$message = Message
+// 删除消息弹出所用的方法，全局挂载
+Vue.prototype.$confirm = MessageBox.confirm
