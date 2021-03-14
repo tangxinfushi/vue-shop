@@ -101,13 +101,13 @@ export default {
             {
               id: 104,
               authName: '角色列表',
-              path: null,
+              path: 'roles',
               children: []
             },
             {
               id: 134,
               authName: '权限列表',
-              path: null,
+              path: 'rights',
               children: []
             }
           ]
