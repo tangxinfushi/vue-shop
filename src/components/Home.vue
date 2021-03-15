@@ -132,7 +132,7 @@ export default {
             {
               id: 136,
               authName: '商品分类',
-              path: null,
+              path: 'categories',
               children: []
             }
           ]
