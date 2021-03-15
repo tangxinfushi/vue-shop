@@ -126,7 +126,7 @@ export default {
             {
               id: 135,
               authName: '分类参数',
-              path: null,
+              path: 'params',
               children: []
             },
             {
