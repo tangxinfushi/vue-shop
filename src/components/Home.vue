@@ -120,7 +120,7 @@ export default {
             {
               id: 134,
               authName: '商品列表',
-              path: null,
+              path: 'goods',
               children: []
             },
             {
