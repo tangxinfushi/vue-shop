@@ -144,8 +144,8 @@ export default {
           children: [
             {
               id: 104,
-              authName: '用户列表',
-              path: null,
+              authName: '订单列表',
+              path: 'orders',
               children: []
             }
           ]

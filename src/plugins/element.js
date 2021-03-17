@@ -40,6 +40,8 @@ import {
   Upload
 } from 'element-ui'
 
+import Timeline from './timeline/index.js'
+import TimelineItem from './timeline-item/index.js'
 // 全局注册
 Vue.use(Button)
 Vue.use(Form)
@@ -76,6 +78,9 @@ Vue.use(Step)
 Vue.use(CheckboxGroup)
 Vue.use(Checkbox)
 Vue.use(Upload)
+Vue.use(Timeline)
+Vue.use(TimelineItem)
+
 // message 需要进行全局挂载，挂载到vue身上
 Vue.prototype.$message = Message
 // 删除消息弹出所用的方法，全局挂载
