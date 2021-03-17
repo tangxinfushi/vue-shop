@@ -92,8 +92,8 @@
                 :timestamp="activity.time">
                 {{activity.context}}
                 </el-timeline-item>
-        </el-timeline>
-        </el-dialog>
+            </el-timeline>
+          </el-dialog>
     </div>
 </template>
 
@@ -239,11 +239,12 @@ export default {
     },
     // 物流
     async showProgressBox() {
+      this.progressVisible = true
       const { data: res } = await this.$http.get('/kuaidi/804909574412544580')
       if (res.meta.status !== 200) {
         return this.$message.error('失败')
       }
-
+      this.$message.success('成功')
       this.progressInfo = res.data
       this.progressVisible = true
     }
@@ -252,8 +253,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import '../../plugins/timeline/timeline.css';
-@import '../../pludins/timeline/timeline-item.css';
+// @import '../../plugins/timeline/timeline-item.css';
+// @import '../../plugins/timeline-item/timeline-item.css';
 .el-cascader{
     widows: 100%;
 }

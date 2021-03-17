@@ -157,8 +157,8 @@ export default {
           children: [
             {
               id: 104,
-              authName: '用户列表',
-              path: null,
+              authName: '数据报表',
+              path: 'reports',
               children: []
             }
           ]
