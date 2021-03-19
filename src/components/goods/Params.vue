@@ -296,16 +296,16 @@ export default {
     },
 
     // 点击按钮，展示修改的对话框
-    async showEditDialog(attrid) {
+    async showEditDialog(attrId) {
       // 查询当前参数的信息
     //   this.editDialogVisible = true
-      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes/${attrid}`,
+      const { data: res } = await this.$http.get(`categories/${this.cateId}/attributes/${attrId}`,
         { params: { attr_sel: this.activeName } })
       if (res.meta.status !== 200) { return this.$message.error('获取参数信息失败！') }
 
       this.editForm = res.data
       this.editDialogVisible = true
-    //   此处attr_id 不知为何报错，被迫改成attrid,不知对程序是否影响,可能是驼峰式命名检验？
+    //   此处attr_id 不知为何报错，被迫改成attrId,不知对程序是否影响,可能是驼峰式命名检验？
     },
     // 重置修改的表单
     editDialogClosed() {
@@ -328,7 +328,7 @@ export default {
       })
     },
     // 根据id删除对应的参数项
-    async removeParams(attrid) {
+    async removeParams(attrId) {
       const confirmResult = await this.$confirm('此操作将永久删除该参数, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -341,8 +341,8 @@ export default {
       }
 
       // 删除的业务逻辑
-      const { data: res } = await this.$http.delete(`categories/${this.cateId}/attributes/${attrid}`)
-      //   此处attr_id 不知为何报错，被迫改成attrid,不知对程序是否影响,可能是驼峰式命名检验？
+      const { data: res } = await this.$http.delete(`categories/${this.cateId}/attributes/${attrId}`)
+      //   此处attr_id 不知为何报错，被迫改成attrId,不知对程序是否影响,可能是驼峰式命名检验？
 
       if (res.meta.status !== 200) {
         return this.$message.error('失败')
