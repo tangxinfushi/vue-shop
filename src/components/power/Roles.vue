@@ -77,17 +77,24 @@
         <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
         <el-table-column label="操作" width="300px">
           <template>
-            <el-button size="mini" type="primary" icon="el-icon-edit"
+            <el-button size="mini" type="primary" icon="el-icon-edit" @click="showEditDiaolog()"
               >编辑</el-button
             >
             <el-button size="mini" type="danger" icon="el-icon-delete"
               >删除</el-button
             >
-            <el-button
+            <!-- <el-button
               size="mini"
               type="warning"
               icon="el-icon-setting"
               @click="showSetRightDiaolog(scope.row)"
+              >分配权限</el-button
+            > -->
+            <el-button
+              size="mini"
+              type="warning"
+              icon="el-icon-setting"
+              @click="showSetRightDiaolog()"
               >分配权限</el-button
             >
           </template>
@@ -123,6 +130,25 @@
       </span>
     </el-dialog>
 
+    <!-- 编辑 -->
+    <el-dialog
+      title="编辑角色"
+      :visible.sync="editDialogVisble"
+      width="50%"
+      @close="editFormClosed">
+      <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="角色名称" prop="roleName">
+          <el-input v-model="editForm.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" prop="roleDesc">
+          <el-input v-model="editForm.roleDesc"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisble = false">取 消</el-button>
+        <el-button type="primary" @click="editDialogVisble = false">确 定</el-button>
+      </span>
+    </el-dialog>
     <!-- 分配权限对话框 -->
     <el-dialog
       title="分配权限"
@@ -232,6 +258,24 @@ export default {
 
       // 控制分配权限对话框的显示与隐藏
       setRightDiaologVisible: false,
+      // 编辑对话框
+      editDialogVisble: false,
+      editForm: {
+        roleName: '',
+        roleDesc: ''
+      },
+      editFormRules: {
+        roleName: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          {
+            min: 3,
+            max: 10,
+            message: '请用户名长度在3~10个字符之间',
+            trigger: 'blur'
+          }
+        ],
+        roleDesc: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+      },
       // 所有权限的数据
       rightslist: [],
       // 树形控件的属性绑定对象
@@ -290,23 +334,33 @@ export default {
       role.children = res.data
       this.$message.info('已删除!')
     },
+    // 编辑
+    showEditDiaolog() {
+      this.editDialogVisble = true
+    },
+    editFormClosed() {
+      this.$refs.editFormRef.resetFields()
+    },
 
     // 展示分配权限的对话框
-    async showSetRightDiaolog(role) {
-      this.roleId = role.id
-      // 获取所有权限的数据
-      // const { data: res } = await this.$http.get('rights/tree')
-      // if (res.meta.status !== 200) {
-      //   return this.$message.error('获取权限数据失败！')
-      // }
-
-      // // 把获取到的权限数据保存到data中
-      // this.rightslist = res.data
-
-      // 递归获取三级节点的Id
-      this.getLeafKeys(role, this.defKeys)
+    showSetRightDiaolog() {
       this.setRightDiaologVisible = true
     },
+    // async showSetRightDiaolog(role) {
+    //   this.roleId = role.id
+    //   // 获取所有权限的数据
+    //   const { data: res } = await this.$http.get('rights/tree')
+    //   if (res.meta.status !== 200) {
+    //     return this.$message.error('获取权限数据失败！')
+    //   }
+
+    //   // 把获取到的权限数据保存到data中
+    //   this.rightslist = res.data
+
+    //   // 递归获取三级节点的Id
+    //   this.getLeafKeys(role, this.defKeys)
+    //   this.setRightDiaologVisible = true
+    // },
     // 通过递归的形式获取角色下所有三级权限的id，并保存到defKeys数组中
     getLeafKeys(node, arr) {
       // 判断是否为三级节点

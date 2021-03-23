@@ -68,6 +68,7 @@ const router = new VueRouter({
 //   if (to.path === '/login') return next()
 //   // 获取token
 //   const tokenStr = window.sessionStorage.getItem('token')
+//   //  没有token，强制跳转到登录页
 //   if (!tokenStr) return next('/login')
 //   next()
 // })

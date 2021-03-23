@@ -24,12 +24,11 @@
           :router="true"
           :default-active="activePath"
         >
-          <!-- 一级菜单 -->
+          <!-- 一级菜单 :default-active="activePath"点击高亮-->
           <el-submenu
             :index="item.id + ''"
             v-for="item in menulist"
-            :key="item.id"
-          >
+            :key="item.id">
             <!-- 一级菜单的模板区域 -->
             <template slot="title">
               <!-- 图标 -->
@@ -42,8 +41,7 @@
               :index="'/' + subItem.path + ''"
               v-for="subItem in item.children"
               :key="subItem.id"
-              @click="saveNavState('/' + subItem.path)"
-            >
+              @click="saveNavState('/' + subItem.path)">
               <template slot="title">
                 <!-- 图标 -->
                 <i class="el-icon-menu"></i>
@@ -179,7 +177,7 @@ export default {
   },
   created() {
     this.getmenuList()
-    this.acctivePath = window.sessionStorage.getItem('activePath')
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     logout() {
@@ -199,6 +197,7 @@ export default {
     },
     // 保存链接的激活状态
     saveNavState(activePath) {
+      // 保存在sessionStorage中，定义一个新的键activePath，第二个为它的值
       window.sessionStorage.setItem('activePath', activePath)
       this.activePath = activePath
     }

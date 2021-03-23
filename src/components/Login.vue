@@ -72,9 +72,7 @@ export default {
     login () {
       this.$refs.loginFormRef.validate(async valid => {
         if (!valid) return
-
-        // const result = await this.$http.post('login', this.loginForm)
-        // console.log(result)
+        // 如果valid为false 则return 不发起请求
 
         // const { date: res } = await this.$http.post('login', this.loginForm)
         // // // eslint-disable-next-line no-undef

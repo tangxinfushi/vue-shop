@@ -41,7 +41,8 @@
                       <!-- 修改按钮 -->
                       <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
                       <!-- 删除按钮 -->
-                      <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)"></el-button>
+                      <el-button type="danger" icon="el-icon-delete" size="mini" @click="
+                      (scope.row.id)"></el-button>
                       <!-- 分配角色按钮 -->
                       <el-tooltip  effect="dark" content="分配角色" placement="top" :enterable="false">
                           <el-button type="warning" icon="el-icon-setting" size="mini" @click="setRole(scope.row)"></el-button>
@@ -176,6 +177,7 @@ export default {
       },
 
       userlist: [],
+      // 所有的用户数量，可以根据这个实现分页
       total: 0,
 
       // 模拟的数据库的菜单
