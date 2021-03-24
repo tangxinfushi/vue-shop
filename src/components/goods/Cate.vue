@@ -31,9 +31,9 @@
                           <el-tag size="mini" type="warning" v-else>三级</el-tag>
                         </template>
                         <!-- 操作 -->
-                        <template slot="opt">
-                          <el-button  size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
-                          <el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+                        <template slot="opt" slot-scope="scope">
+                          <el-button  size="mini" type="primary" icon="el-icon-edit" @click="showEditDialog(scope.row.cat_id)">编辑</el-button>
+                          <el-button size="mini" type="danger" icon="el-icon-delete" @click='removeCatId(scope.row.cat_id)'>删除</el-button>
 
                         </template>
                     </tree-table>
@@ -71,6 +71,27 @@
               <span slot="footer" class="dialog-footer">
                 <el-button @click="addCateDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="addCate">确 定</el-button>
+              </span>
+            </el-dialog>
+
+            <!-- 编辑 -->
+            <el-dialog
+              title="编辑分类"
+              :visible.sync="editDialogVisible"
+              width="30%"
+              @close="editDialogClosed"
+              >
+              <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="100px" class="demo-ruleForm">
+                <el-form-item label="分类名称" prop="cat_name">
+                  <el-input v-model="editForm.cat_name"></el-input>
+                </el-form-item>
+                <el-form-item label="排序" prop="cat_level">
+                  <el-input v-model="editForm.cat_level"></el-input>
+                </el-form-item>
+              </el-form>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="editDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="editInfo">确 定</el-button>
               </span>
             </el-dialog>
     </div>
@@ -175,7 +196,18 @@ export default {
         children: 'children'
       },
       // 选中的父级分类的id数组
-      selectedKeys: []
+      selectedKeys: [],
+      editDialogVisible: false,
+      editForm: {
+        cat_id: '',
+        cat_name: '',
+        cat_level: ''
+      },
+      editFormRules: {
+        cat_name: [
+          { required: true, message: '请输入分类的名称', trigger: 'blur' }
+        ]
+      }
     }
   },
   created() {
@@ -259,6 +291,45 @@ export default {
       this.selectedKeys = []
       this.addCateForm.cat_level = 0
       this.addCateForm.cat_pid = 0
+    },
+    // 编辑
+    async showEditDialog(catid) {
+      this.editDialogVisible = true
+      const { data: res } = await this.$http.get('categories/' + catid)
+      if (res.meta.status !== 200) { return this.$message.error('查询角色失败') }
+      this.editForm = res.data
+      // this.editDialogVisble = true
+    },
+    // 关闭重置
+    editDialogClosed() {
+      this.$refs.editFormRef.resetFields()
+    },
+    editInfo() {
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put('categories/' + this.editForm.cat_id)
+        if (res.meta.status !== 200) { return this.$message.error('查询角色失败') }
+        this.editDialogVisible = false
+        this.getCateList()
+        this.$message.success('成功')
+      })
+    },
+    // 删除
+    async removeCatId(catid) {
+      const confirmResult = await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => { return err })
+      if (confirmResult !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
+      const { data: res } = await this.$http.delete('categories/' + catid)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除用户失败！')
+      }
+      this.$message.success('删除用户成功！')
+      this.getCateList()
     }
   }
 }

@@ -41,8 +41,7 @@
                       <!-- 修改按钮 -->
                       <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
                       <!-- 删除按钮 -->
-                      <el-button type="danger" icon="el-icon-delete" size="mini" @click="
-                      (scope.row.id)"></el-button>
+                      <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)"></el-button>
                       <!-- 分配角色按钮 -->
                       <el-tooltip  effect="dark" content="分配角色" placement="top" :enterable="false">
                           <el-button type="warning" icon="el-icon-setting" size="mini" @click="setRole(scope.row)"></el-button>
@@ -147,7 +146,7 @@ export default {
     // 验证邮箱的规则
     const checkEmail = (rule, value, cb) => {
     // 验证邮箱的正则表达式
-      const regEmail = /^w+([-+.]w+)*@w+([-.]w+)*.w+([-.]w+)*$/
+      const regEmail = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
       if (regEmail.test(value)) {
         // 合法邮箱
         return cb()

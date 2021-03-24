@@ -34,7 +34,7 @@
                 </el-table-column>
                 <el-table-column label="操作" width="120px">
                     <template slot-scope="scope">
-                        <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+                        <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.goods_id)"></el-button>
                         <el-button type="danger" icon="el-icon-delete" size="mini"  @click="removeById(scope.row.goods_id)"></el-button>
                     </template>
                 </el-table-column>
@@ -52,6 +52,41 @@
             </el-pagination>
         </el-card>
 
+        <!-- 编辑 -->
+        <el-dialog
+          title="编辑商品"
+          :visible.sync="editDialogVisible"
+          width="30%"
+          @close="editDialogClosed"
+          >
+          <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="80px" class="demo-ruleForm">
+            <el-form-item label="商品名称" prop="goods_name">
+              <el-input v-model="editForm.goods_name"></el-input>
+            </el-form-item>
+            <el-form-item label="商品价格" prop="goods_price">
+              <el-input v-model="editForm.goods_price"></el-input>
+            </el-form-item>
+            <el-form-item label="商品数量" prop="goods_number">
+              <el-input v-model="editForm.goods_number"></el-input>
+            </el-form-item>
+            <el-form-item label="商品重量" prop="goods_weight">
+              <el-input v-model="editForm.goods_weight"></el-input>
+            </el-form-item>
+            <el-form-item label="商品介绍" prop="goods_introduce">
+              <el-input v-model="editForm.goods_introduce"></el-input>
+            </el-form-item>
+            <el-form-item label="上传图片" prop="pic">
+              <el-input v-model="editForm.pic.pic"></el-input>
+            </el-form-item>
+            <el-form-item label="商品参数" prop="attrs">
+              <el-input v-model="editForm.attrs"></el-input>
+            </el-form-item>
+          </el-form>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="editDialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="editInfo">确 定</el-button>
+          </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -81,7 +116,44 @@ export default {
         }
       ],
       //   总数据条数
-      total: 0
+      total: 0,
+      // 编辑
+      editForm: {
+        goods_id: '',
+        goods_name: '',
+        goods_price: '',
+        goods_number: '',
+        goods_weight: '',
+        goods_introduce: '',
+        pic: {
+          pic: ''
+        },
+        attrs: []
+      },
+      editDialogVisible: false,
+      editFormRules: {
+        goods_name: [
+          { required: true, message: '请输入角色名称', trigger: 'blur' }
+        ],
+        goods_price: [
+          { required: true, message: '请输入角色名称', trigger: 'blur' }
+        ],
+        goods_number: [
+          { required: true, message: '请输入角色名称', trigger: 'blur' }
+        ],
+        goods_weight: [
+          { required: true, message: '请输入角色名称', trigger: 'blur' }
+        ],
+        goods_introduce: [
+          { message: '请输入角色名称', trigger: 'blur' }
+        ],
+        pic: [
+          { message: '请输入角色名称', trigger: 'blur' }
+        ],
+        attrs: [
+          { message: '请输入角色名称', trigger: 'blur' }
+        ]
+      }
     }
   },
   created() {
@@ -109,7 +181,37 @@ export default {
       this.queryInfo.pagenum = newPage
       this.getGoodsList()
     },
+    // 编辑
+    async showEditDialog(id) {
+      this.editDialogVisible = true
+      const { data: res } = await this.$http.get('goods/' + id)
+      if (res.meta.status !== 201) { return this.$message.error('获取商品信息失败') }
+      this.editForm = res.data
+      this.$message.success('成功')
+      // this.editDialogVisible = true
+    },
+    editDialogClosed() {
+      this.$refs.editDialogRef.resetFields()
+    },
+    editInfo() {
+      this.$refs.editDialogRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put('goods/' + this.editForm.goods_id, {
+          goods_name: this.editForm.goods_name,
+          goods_price: this.editForm.goods_price,
+          goods_number: this.editForm.goods_number,
+          goods_weight: this.editForm.goods_weight,
+          goods_introduce: this.editForm.goods_introduce,
+          pic: this.editForm.pic,
+          attrs: this.editForm.attrs
+        })
 
+        if (res.meta.status !== 201) { return this.$message.error('失败！') }
+        this.editDialogVisible = false
+        this.getGoodsList()
+        this.$message.success('成功')
+      })
+    },
     // 删除
     async removeById(id) {
       const confirmResult = await this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {

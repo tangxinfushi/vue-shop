@@ -76,8 +76,8 @@
         <el-table-column label="角色名称" prop="roleName"></el-table-column>
         <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
         <el-table-column label="操作" width="300px">
-          <template>
-            <el-button size="mini" type="primary" icon="el-icon-edit" @click="showEditDiaolog()"
+          <template slot-scope="scope">
+            <el-button size="mini" type="primary" icon="el-icon-edit" @click="showEditDiaolog(scope.row.id)"
               >编辑</el-button
             >
             <el-button size="mini" type="danger" icon="el-icon-delete"
@@ -136,7 +136,7 @@
       :visible.sync="editDialogVisble"
       width="50%"
       @close="editFormClosed">
-      <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="100px" class="demo-ruleForm">
+      <el-form :model="editForm" :rules="editFormRules" ref="editFormRef" label-width="70px" class="demo-ruleForm">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="editForm.roleName"></el-input>
         </el-form-item>
@@ -146,7 +146,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisble = false">取 消</el-button>
-        <el-button type="primary" @click="editDialogVisble = false">确 定</el-button>
+        <el-button type="primary" @click="editInfo">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 分配权限对话框 -->
@@ -170,6 +170,16 @@
 <script>
 export default {
   data() {
+    // 验证邮箱的规则
+    const checkEmail = (rule, value, cb) => {
+    // 验证邮箱的正则表达式
+      const regEmail = /^[\u4e00-\u9fa5a-zA-Z0-9]{2,5}$/
+      if (regEmail.test(value)) {
+        // 合法邮箱
+        return cb()
+      }
+      cb(new Error('角色描述可以包含中文、大小写字母、和数字在2到5位之间'))
+    }
     return {
       // 所有角色列表数据
       rolelist: [],
@@ -261,21 +271,26 @@ export default {
       // 编辑对话框
       editDialogVisble: false,
       editForm: {
+        roleId: '',
         roleName: '',
         roleDesc: ''
       },
       editFormRules: {
         roleName: [
-          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { required: true, message: '请输入角色名称', trigger: 'blur' },
           {
-            min: 3,
-            max: 10,
-            message: '请用户名长度在3~10个字符之间',
+            min: 2,
+            max: 6,
+            message: '请角色名称长度在2~6个字符之间',
             trigger: 'blur'
           }
+
         ],
-        roleDesc: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+        roleDesc: [{ required: true, message: '请输入描述', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ]
       },
+
       // 所有权限的数据
       rightslist: [],
       // 树形控件的属性绑定对象
@@ -317,7 +332,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }
-      ).catch((err) => err)
+      ).catch((err) => { return err })
 
       if (confirmResult !== 'confirm') {
         return this.$message.info('取消了删除！')
@@ -335,11 +350,31 @@ export default {
       this.$message.info('已删除!')
     },
     // 编辑
-    showEditDiaolog() {
+    async showEditDiaolog(id) {
       this.editDialogVisble = true
+      const { data: res } = this.$http.get('roles/' + id)
+      if (res.meta.status !== 200) { return this.$message.error('查询角色失败') }
+      this.editForm = res.data
+      // this.editDialogVisble = true
     },
+    // 重置表单
     editFormClosed() {
       this.$refs.editFormRef.resetFields()
+    },
+    // 编辑角色信息并提交
+    editInfo() {
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put('roles/' + this.editForm.roleId, {
+          roleName: this.editForm.roleName,
+          roleDesc: this.editForm.roleDesc
+        })
+
+        if (res.meta.status !== 200) { return this.$message.error('更新角色失败') }
+        this.editDialogVisble = false
+        this.getRoleList()
+        this.$message.success('更新用户信息成功')
+      })
     },
 
     // 展示分配权限的对话框
